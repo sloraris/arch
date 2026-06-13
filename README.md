@@ -1,5 +1,5 @@
 # Arch
-My personal helper scripts for install Arch, btw.
+My personal helper scripts for installing Arch, btw.
 *Definitely written by Gemini with some help.*
 
 ## Post-installation but pre-boot
