@@ -49,6 +49,54 @@ else
     echo " -> Audio profiles applied successfully."
 fi
 
+# 5. Dotfiles Configuration (GNU Stow)
+echo ""
+echo "-----------------------------------------"
+echo "Dotfiles Configuration (GNU Stow)"
+echo "-----------------------------------------"
+read -p "Would you like to pull and stow your public dotfiles from GitHub? (y/N): " install_dotfiles
+
+if [[ "$install_dotfiles" =~ ^[Yy]$ ]]; then
+    read -p "Enter your GitHub username: " gh_user
+    read -p "Enter your dotfiles repository name (e.g., dotfiles): " gh_repo
+
+    if [ -n "$gh_user" ] && [ -n "$gh_repo" ]; then
+        # Ensure stow is installed before proceeding
+        if ! command -v stow &> /dev/null; then
+            echo "Installing GNU Stow..."
+            sudo pacman -S --needed --noconfirm stow
+        fi
+
+        DOTFILES_DIR="$HOME/$gh_repo"
+
+        if [ -d "$DOTFILES_DIR" ]; then
+            echo "Directory $DOTFILES_DIR already exists. Skipping clone."
+        else
+            echo "Cloning https://github.com/$gh_user/$gh_repo.git..."
+            git clone "https://github.com/$gh_user/$gh_repo.git" "$DOTFILES_DIR"
+        fi
+
+        if [ -d "$DOTFILES_DIR" ]; then
+            echo "Applying Stow configurations..."
+            cd "$DOTFILES_DIR"
+            
+            # Loop through all directories in the repo and stow them
+            for dir in */ ; do
+                if [ -d "$dir" ]; then
+                    pkg="${dir%/}" # Remove trailing slash for cleaner output
+                    echo " -> Stowing $pkg..."
+                    stow "$pkg" || echo "    [!] Failed to stow $pkg. (You may need to manually remove conflicting default files)."
+                fi
+            done
+            echo "Dotfiles installation finished."
+        fi
+    else
+        echo "Username or repository cannot be empty. Skipping dotfiles."
+    fi
+else
+    echo "Skipping dotfiles installation."
+fi
+
 echo ""
 echo "========================================="
 echo "Desktop configuration complete."
