@@ -14,7 +14,16 @@ The following will make your bootup screen look a little nice without installing
 curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/heads/main/plymouth.sh | bash
 ```
 ### Everything
-This will replicate my personal PC setup with apps, wm, monitors, window rules, and system settings.
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/heads/main/desktop.sh | bash
 ```
+This will replicate my personal PC setup with the following:
+- DankLinux (interactive install, can use `ctrl+c` to exit and skip it)
+- Apps
+  - Spotify
+  - Obsidian
+  - Steam
+  - Equibop
+  - Helium Browser
+  - Modrinth (Minecraft mod client)
+- Bibata Cursor theme
