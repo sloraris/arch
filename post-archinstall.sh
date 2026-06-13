@@ -145,13 +145,21 @@ chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanor
 
 # 8. AUR Helper (Paru)
 echo "Building and installing Paru..."
-# We must switch to the standard user to run makepkg
+
+# Temporarily allow passwordless sudo for this user so makepkg doesn't hang waiting for stdin
+echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/temp_script_sudo
+
+# Switch to the standard user to run makepkg
 su - "$USERNAME" -c "
   cd /tmp
+  rm -rf paru # Clean up any previous failed clones
   git clone https://aur.archlinux.org/paru.git
   cd paru
   makepkg -si --noconfirm
 "
+
+# Revoke temporary passwordless sudo
+rm /etc/sudoers.d/temp_script_sudo
 
 echo "Configuring Paru..."
 # Uncomment BottomUp and CleanAfter in paru.conf
