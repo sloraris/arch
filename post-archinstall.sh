@@ -1,12 +1,19 @@
 #!/bin/bash
 
-# --- ARGUMENT VALIDATION ---
+# --- ARGUMENT & SYSTEM VALIDATION ---
 USERNAME="$1"
 
 if [ -z "$USERNAME" ]; then
   echo "Error: No username provided."
   echo "Usage: ./post_install.sh <username>"
   echo "Via curl: curl -fsSL <url> | bash -s -- <username>"
+  exit 1
+fi
+
+# Ensure the user actually exists on the system before proceeding
+if ! id "$USERNAME" &>/dev/null; then
+  echo "Error: User '$USERNAME' does not exist on this system."
+  echo "Make sure you created the user during archinstall."
   exit 1
 fi
 
@@ -17,18 +24,15 @@ echo "Starting Post-Installation Configuration for user: $USERNAME..."
 
 # 1. Additional Packages
 echo "Installing pacman packages..."
-# Added --needed to skip already installed packages
 pacman -S --needed --noconfirm nvidia-open nvidia-utils nano git base-devel thunar 7zip imv udiskie gnome-keyring fastfetch reflector man-pages man-db sof-firmware wiremix vulkan-headers ffmpeg libfido2 nfs-utils networkmanager
 
 # 2. Reflector Setup
 echo "Configuring Reflector..."
-# Retry loop for network stability in chroot
 MAX_RETRIES=3
 RETRY_COUNT=0
 REFLECTOR_SUCCESS=false
 
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-  # The if statement naturally suppresses 'set -e' for the reflector command itself
   if reflector --country "United States,Canada,Mexico" --protocol https --latest 10 --sort age --save /etc/pacman.d/mirrorlist; then
     REFLECTOR_SUCCESS=true
     echo "Reflector completed successfully."
@@ -41,7 +45,7 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
 done
 
 if [ "$REFLECTOR_SUCCESS" = false ]; then
-  echo "Warning: Reflector failed after $MAX_RETRIES attempts. Keeping existing mirrorlist and continuing script..."
+  echo "Warning: Reflector failed after $MAX_RETRIES attempts. Keeping existing mirrorlist."
 fi
 
 mkdir -p /etc/xdg/reflector/
@@ -53,7 +57,6 @@ cat << 'EOF' > /etc/xdg/reflector/reflector.conf
 --sort age
 EOF
 
-# Enable timer (systemctl works differently in chroot, so we don't use --now)
 systemctl enable reflector.timer
 
 # 3. Gigabyte Motherboard Sleep Fix
@@ -74,7 +77,6 @@ systemctl enable gigabyte-sleep-fix
 
 # 4. NVIDIA GPU - Initial Boot (mkinitcpio)
 echo "Configuring mkinitcpio for NVIDIA..."
-# Replace the existing MODULES line with the NVIDIA modules
 sed -i 's/^MODULES=.*/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
 mkinitcpio -P
 
@@ -127,42 +129,47 @@ EOF
 
 # 7. System Settings & Personalization
 echo "Configuring pacman and user dotfiles..."
-# Enable Color and ILoveCandy in pacman.conf
 sed -i 's/^#Color/Color\nILoveCandy/' /etc/pacman.conf
-
-# Uncomment multilib repository in pacman.conf
 sed -i '/^#\[multilib\]/,/^#Include = \/etc\/pacman.d\/mirrorlist/ s/^#//' /etc/pacman.conf
-
-# Update pacman databases after enabling multilib
 pacman -Sy
 
-# Add user-specific configurations
-echo "fastfetch" >> /home/"$USERNAME"/.bashrc
-echo "set tabsize 4" >> /home/"$USERNAME"/.nanorc
+# Idempotent Appends: Only add if the line doesn't already exist
+touch /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanorc
+grep -qxF 'fastfetch' /home/"$USERNAME"/.bashrc || echo "fastfetch" >> /home/"$USERNAME"/.bashrc
+grep -qxF 'set tabsize 4' /home/"$USERNAME"/.nanorc || echo "set tabsize 4" >> /home/"$USERNAME"/.nanorc
 
-# Ensure the user actually owns these modified files, not root
 chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanorc
 
 # 8. AUR Helper (Paru)
-echo "Building and installing Paru..."
+echo "Checking for Paru..."
 
-# Temporarily allow passwordless sudo for this user so makepkg doesn't hang waiting for stdin
-echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/temp_script_sudo
-
-# Switch to the standard user to run makepkg
-su - "$USERNAME" -c "
-  cd /tmp
-  rm -rf paru # Clean up any previous failed clones
-  git clone https://aur.archlinux.org/paru.git
-  cd paru
-  makepkg -si --noconfirm
-"
-
-# Revoke temporary passwordless sudo
-rm /etc/sudoers.d/temp_script_sudo
+# Check if paru is already installed for this user
+if ! su - "$USERNAME" -c "command -v paru" &> /dev/null; then
+  echo "Building and installing Paru..."
+  
+  echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/temp_script_sudo
+  
+  su - "$USERNAME" -c "
+    cd /tmp
+    rm -rf paru
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si --noconfirm
+  "
+  
+  rm /etc/sudoers.d/temp_script_sudo
+else
+  echo "Paru is already installed. Skipping build."
+fi
 
 echo "Configuring Paru..."
-# Uncomment BottomUp and CleanAfter in paru.conf
+# Create paru config dir if it doesn't exist (paru might not have run yet)
+mkdir -p /etc/
+# If paru.conf doesn't exist, create a basic one so sed doesn't fail
+if [ ! -f /etc/paru.conf ]; then
+  echo -e "[options]\n#BottomUp\n#CleanAfter" > /etc/paru.conf
+fi
+
 sed -i 's/^#BottomUp/BottomUp/' /etc/paru.conf
 sed -i 's/^#CleanAfter/CleanAfter/' /etc/paru.conf
 
