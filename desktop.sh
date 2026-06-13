@@ -8,7 +8,7 @@ echo "Starting Desktop Configuration"
 echo "========================================="
 
 # Additional setup script calls
-curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/main/plymouth.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/heads/main/plymouth.sh | bash
 
 # 1. Dank Linux Installation
 echo ""
