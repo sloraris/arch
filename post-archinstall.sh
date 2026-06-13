@@ -17,11 +17,32 @@ echo "Starting Post-Installation Configuration for user: $USERNAME..."
 
 # 1. Additional Packages
 echo "Installing pacman packages..."
-pacman -S --noconfirm nvidia-open nvidia-utils nano git base-devel thunar 7zip imv udiskie gnome-keyring fastfetch reflector man-pages man-db sof-firmware wiremix vulkan-headers ffmpeg libfido2 nfs-utils networkmanager
+# Added --needed to skip already installed packages
+pacman -S --needed --noconfirm nvidia-open nvidia-utils nano git base-devel thunar 7zip imv udiskie gnome-keyring fastfetch reflector man-pages man-db sof-firmware wiremix vulkan-headers ffmpeg libfido2 nfs-utils networkmanager
 
 # 2. Reflector Setup
 echo "Configuring Reflector..."
-reflector --country "United States,Canada,Mexico" --protocol https --latest 10 --sort age --save /etc/pacman.d/mirrorlist
+# Retry loop for network stability in chroot
+MAX_RETRIES=3
+RETRY_COUNT=0
+REFLECTOR_SUCCESS=false
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+  # The if statement naturally suppresses 'set -e' for the reflector command itself
+  if reflector --country "United States,Canada,Mexico" --protocol https --latest 10 --sort age --save /etc/pacman.d/mirrorlist; then
+    REFLECTOR_SUCCESS=true
+    echo "Reflector completed successfully."
+    break
+  else
+    echo "Reflector failed. Retrying in 5 seconds... ($((RETRY_COUNT+1))/$MAX_RETRIES)"
+    sleep 5
+    ((RETRY_COUNT++))
+  fi
+done
+
+if [ "$REFLECTOR_SUCCESS" = false ]; then
+  echo "Warning: Reflector failed after $MAX_RETRIES attempts. Keeping existing mirrorlist and continuing script..."
+fi
 
 mkdir -p /etc/xdg/reflector/
 cat << 'EOF' > /etc/xdg/reflector/reflector.conf
