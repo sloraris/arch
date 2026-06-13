@@ -22,11 +22,24 @@ set -e
 
 echo "Starting Post-Installation Configuration for user: $USERNAME..."
 
-# 1. Additional Packages
+# 1. System Settings & Personalization
+echo "Configuring pacman, nano, and bash..."
+sed -i 's/^#Color/Color\nILoveCandy/' /etc/pacman.conf
+sed -i '/^#\[multilib\]/,/^#Include = \/etc\/pacman.d\/mirrorlist/ s/^#//' /etc/pacman.conf
+pacman -Sy
+
+# Idempotent Appends: Only add if the line doesn't already exist
+touch /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanorc
+grep -qxF 'fastfetch' /home/"$USERNAME"/.bashrc || echo "fastfetch" >> /home/"$USERNAME"/.bashrc
+grep -qxF 'set tabsize 4' /home/"$USERNAME"/.nanorc || echo "set tabsize 4" >> /home/"$USERNAME"/.nanorc
+
+chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanorc
+
+# 2. Additional Packages
 echo "Installing pacman packages..."
 pacman -S --needed --noconfirm nvidia-open nvidia-utils nano git base-devel thunar 7zip imv udiskie gnome-keyring fastfetch reflector man-pages man-db sof-firmware wiremix vulkan-headers ffmpeg libfido2 nfs-utils networkmanager
 
-# 2. Reflector Setup
+# 3. Reflector Setup
 echo "Configuring Reflector..."
 MAX_RETRIES=3
 RETRY_COUNT=0
@@ -59,7 +72,7 @@ EOF
 
 systemctl enable reflector.timer
 
-# 3. Gigabyte Motherboard Sleep Fix
+# 4. Gigabyte Motherboard Sleep Fix
 echo "Applying Gigabyte Sleep Fix..."
 cat << 'EOF' > /etc/systemd/system/gigabyte-sleep-fix.service
 [Unit]
@@ -75,12 +88,12 @@ EOF
 
 systemctl enable gigabyte-sleep-fix
 
-# 4. NVIDIA GPU - Initial Boot (mkinitcpio)
+# 5. NVIDIA GPU - Initial Boot (mkinitcpio)
 echo "Configuring mkinitcpio for NVIDIA..."
 sed -i 's/^MODULES=.*/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
 mkinitcpio -P
 
-# 5. NVIDIA GPU - Sleep/Wake Script
+# 6. NVIDIA GPU - Sleep/Wake Script
 echo "Creating NVIDIA sleep/wake script..."
 mkdir -p /usr/lib/systemd/system-sleep
 cat << 'EOF' > /usr/lib/systemd/system-sleep/nvidia
@@ -115,7 +128,7 @@ EOF
 
 chmod +x /usr/lib/systemd/system-sleep/nvidia
 
-# 6. GNOME Keyring Configuration
+# 7. GNOME Keyring Configuration
 echo "Configuring PAM for greetd and GNOME Keyring..."
 cat << 'EOF' > /etc/pam.d/greetd
 auth       required     pam_securetty.so
@@ -126,19 +139,6 @@ account    include      system-local-login
 session    include      system-local-login
 session    optional     pam_gnome_keyring.so auto_start
 EOF
-
-# 7. System Settings & Personalization
-echo "Configuring pacman and user dotfiles..."
-sed -i 's/^#Color/Color\nILoveCandy/' /etc/pacman.conf
-sed -i '/^#\[multilib\]/,/^#Include = \/etc\/pacman.d\/mirrorlist/ s/^#//' /etc/pacman.conf
-pacman -Sy
-
-# Idempotent Appends: Only add if the line doesn't already exist
-touch /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanorc
-grep -qxF 'fastfetch' /home/"$USERNAME"/.bashrc || echo "fastfetch" >> /home/"$USERNAME"/.bashrc
-grep -qxF 'set tabsize 4' /home/"$USERNAME"/.nanorc || echo "set tabsize 4" >> /home/"$USERNAME"/.nanorc
-
-chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanorc
 
 # 8. AUR Helper (Paru)
 echo "Checking for Paru..."
