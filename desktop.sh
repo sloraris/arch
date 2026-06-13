@@ -18,7 +18,7 @@ echo "When the menu appears, MAKE SURE to select 'dms-greeter'!"
 echo "-----------------------------------------"
 read -p "Press Enter to acknowledge and continue..."
 
-# Temporarily disable set -e just in case the interactive installer throws a weird exit code
+# Temporarily disable set -e to allow exiting Dank installer without cancelling script
 set +e
 curl -fsSL https://install.danklinux.com | sh
 set -e
@@ -31,14 +31,11 @@ sudo pacman -S --needed --noconfirm spotify-launcher obsidian steam
 # 3. AUR Packages via Paru
 echo ""
 echo "Installing custom AUR packages via paru..."
-paru -S --needed --noconfirm bibata-cursor-theme popsicle-bin helium-browser-bin equibop-bin modrinth-app-bin
+paru -S --needed --noconfirm bibata-cursor-theme popsicle-bin helium-browser-bin equibop-bin modrinth-app visual-studio-code-bin
 
 # 4. Audio Profile Configuration
 echo ""
 echo "Configuring Audio Profiles for Razer and SteelSeries hardware..."
-
-# pactl list cards short outputs the card index in column 1 and the exact card name in column 2.
-# We use grep to filter for your specific brands, and awk to extract just the card name string.
 
 CARDS=$(pactl list cards short | grep -iE 'razer|steel' | awk '{print $2}')
 
