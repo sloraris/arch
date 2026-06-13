@@ -18,7 +18,7 @@ fi
 
 # 3. Apply the Stock Theme
 echo "Applying the stock BGRT theme..."
-sudo plymouth-set-default-theme -R bgrt
+sudo plymouth-set-default-theme -R spinner
 
 # 4. Bootloader Detection & Injection
 echo "Hunting for bootloader configurations..."
