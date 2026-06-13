@@ -37,7 +37,7 @@ chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanor
 
 # 2. Additional Packages
 echo "Installing pacman packages..."
-pacman -S --needed --noconfirm nvidia-open nvidia-utils nano git stow bash-completions base-devel thunar 7zip imv udiskie gnome-keyring fastfetch reflector man-pages man-db sof-firmware wiremix vulkan-headers ffmpeg libfido2 nfs-utils networkmanager
+pacman -S --needed --noconfirm nvidia-open nvidia-utils nano git stow bash-completion base-devel thunar 7zip imv udiskie gnome-keyring fastfetch reflector man-pages man-db sof-firmware wiremix vulkan-headers ffmpeg libfido2 nfs-utils networkmanager
 
 # 3. Reflector Setup
 echo "Configuring Reflector..."
