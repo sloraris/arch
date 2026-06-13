@@ -57,7 +57,7 @@ if [ -n "$LIMINE_CONF" ]; then
   echo "Detected Limine at $LIMINE_CONF. Injecting kernel parameters..."
   if ! grep -q "splash" "$LIMINE_CONF"; then
     # Appends 'quiet splash' to the end of any kernel_cmdline directive
-    sudo sed -i '/kernel_cmdline/ s/$/ quiet splash/' "$LIMINE_CONF"
+    sudo sed -i '/cmdline/ s/$/ quiet splash/' "$LIMINE_CONF"
     echo " -> Updated $LIMINE_CONF"
   fi
   BOOTLOADER_FOUND=true
