@@ -5,5 +5,5 @@ My personal helper scripts for install Arch, btw.
 ## Post-installation but pre-boot
 Takes your username as an argument for dealing with commands that cannot be run as root or that deal with the user's home directory.
 ```bash
-curl -fsSL https://raw.githubusercontent.com/your-username/repo/main/post_archinstall.sh | bash -s -- <username>
+curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/heads/main/post-archinstall.sh | bash -s -- <username>
 ```
