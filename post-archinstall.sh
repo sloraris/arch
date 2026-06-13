@@ -174,5 +174,5 @@ sed -i 's/^#BottomUp/BottomUp/' /etc/paru.conf
 sed -i 's/^#CleanAfter/CleanAfter/' /etc/paru.conf
 
 echo "========================================="
-echo "Post-installation script complete for user: $USERNAME!"
+echo "Post-installation script complete for user: $USERNAME"
 echo "========================================="
