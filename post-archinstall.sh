@@ -173,6 +173,9 @@ fi
 sed -i 's/^#BottomUp/BottomUp/' /etc/paru.conf
 sed -i 's/^#CleanAfter/CleanAfter/' /etc/paru.conf
 
+# 9. Enable NetworkManager
+systemctl enable NetworkManager
+
 echo "========================================="
 echo "Post-installation script complete for user: $USERNAME"
 echo "========================================="
