@@ -16,5 +16,5 @@ curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/heads/main/plymo
 ### Everything
 This will replicate my personal PC setup with apps, wm, monitors, window rules, and system settings.
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/heads/main/slo-config.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sloraris/arch/refs/heads/main/desktop.sh | bash
 ```
