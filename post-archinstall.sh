@@ -1,5 +1,55 @@
 #!/bin/bash
 
+# --- PACMAN PACKAGE LIST ---
+PACKAGES=(
+    # System Core & Dev Tools
+    base-devel
+    git
+    nano
+    stow
+    fastfetch
+    reflector
+    bash-completion
+    man-pages
+    man-db
+
+    # Graphics & Drivers
+    nvidia-open
+    nvidia-utils
+    vulkan-headers
+
+    # Firmware & Networking
+    sof-firmware
+    networkmanager
+
+    # File Systems & Drive Management
+    ntfs-3g
+    dosfstools
+    exfatprogs
+    udiskie
+    nfs-utils
+
+    # File Manager (Thunar)
+    thunar
+    thunar-archive-plugin
+    thunar-volman
+    gvfs
+    tumbler
+
+    # Wayland, Portals & Theming
+    xdg-desktop-portal-wlr
+    xdg-desktop-portal-gtk
+    adw-gtk-theme
+    gnome-keyring
+    libfido2
+
+    # Media & Archives
+    7zip
+    ffmpeg
+    imv
+    wiremix
+)
+
 # --- ARGUMENT & SYSTEM VALIDATION ---
 USERNAME="$1"
 
@@ -37,7 +87,7 @@ chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.bashrc /home/"$USERNAME"/.nanor
 
 # 2. Additional Packages
 echo "Installing pacman packages..."
-pacman -S --needed --noconfirm nvidia-open nvidia-utils nano git stow bash-completion base-devel adw-gtk-theme xdg-desktop-portal-wlr xdg-desktop-portal-gtk thunar gvfs tumbler thunar-archive-plugin 7zip imv udiskie gnome-keyring fastfetch reflector man-pages man-db sof-firmware wiremix vulkan-headers ffmpeg libfido2 nfs-utils networkmanager
+pacman -S --needed --noconfirm "${PACKAGES[@]}"
 
 # 3. Reflector Setup
 echo "Configuring Reflector..."
