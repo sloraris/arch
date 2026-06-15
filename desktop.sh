@@ -25,12 +25,12 @@ set -e
 
 # 2. Standard Pacman Packages
 echo ""
-echo "Installing standard system packages via pacman..."
+echo "Installing additional system packages via pacman..."
 sudo pacman -S --needed --noconfirm spotify-launcher obsidian steam
 
 # 3. AUR Packages via Paru
 echo ""
-echo "Installing custom AUR packages via paru..."
+echo "Installing AUR packages via paru..."
 paru -S --needed --noconfirm bibata-cursor-theme popsicle-bin helium-browser-bin equibop-bin modrinth-app visual-studio-code-bin
 
 # 4. Audio Profile Configuration
