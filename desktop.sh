@@ -49,7 +49,26 @@ else
     echo " -> Audio profiles applied successfully."
 fi
 
-# 5. Dotfiles Configuration (GNU Stow)
+# 5. Configure XDG Desktop Portals
+echo "Configuring XDG Desktop Portals..."
+
+# Ensure the directory exists
+mkdir -p /home/"$USERNAME"/.config/xdg-desktop-portal
+
+# Write the configuration (overwrites if it already exists)
+cat << 'EOF' > "$PORTAL_DIR/portals.conf"
+[preferred]
+default=gtk
+org.freedesktop.impl.portal.ScreenCast=wlr
+org.freedesktop.impl.portal.Screenshot=wlr
+EOF
+
+# Transfer ownership from root back to the actual user
+chown -R "$USERNAME":"$USERNAME" "$PORTAL_DIR"
+
+echo " -> portals.conf generated successfully."
+
+# 6. Dotfiles Configuration (GNU Stow)
 echo ""
 echo "-----------------------------------------"
 echo "Dotfiles Configuration (GNU Stow)"
