@@ -49,11 +49,14 @@ else
     echo " -> Audio profiles applied successfully."
 fi
 
-# 5. Configure XDG Desktop Portals
+# 10. Configure XDG Desktop Portals
 echo "Configuring XDG Desktop Portals..."
 
-# Ensure the directory exists
-mkdir -p /home/"$USERNAME"/.config/xdg-desktop-portal
+# Define the path using the USERNAME variable
+PORTAL_DIR="/home/$USERNAME/.config/xdg-desktop-portal"
+
+# Create the directory
+mkdir -p "$PORTAL_DIR"
 
 # Write the configuration (overwrites if it already exists)
 cat << 'EOF' > "$PORTAL_DIR/portals.conf"
