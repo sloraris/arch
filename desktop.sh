@@ -71,7 +71,11 @@ chown -R "$USERNAME":"$USERNAME" "$PORTAL_DIR"
 
 echo " -> portals.conf generated successfully."
 
-# 6. Dotfiles Configuration (GNU Stow)
+# 6. Set XWayland cursor size/theme
+export XCURSOR_SIZE=26
+export XCURSOR_THEME="Bibata-Modern-Ice"
+
+# 7. Dotfiles Configuration (GNU Stow)
 echo ""
 echo "-----------------------------------------"
 echo "Dotfiles Configuration (GNU Stow)"
