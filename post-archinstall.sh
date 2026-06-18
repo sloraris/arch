@@ -28,6 +28,7 @@ PACKAGES=(
     exfatprogs
     udiskie
     nfs-utils
+    samba
 
     # File Manager (Thunar)
     thunar
