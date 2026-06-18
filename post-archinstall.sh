@@ -35,6 +35,8 @@ PACKAGES=(
     thunar-archive-plugin
     thunar-volman
     gvfs
+    gvfs-smb
+    gvfs-nfs
     tumbler
 
     # Wayland, Portals & Theming
