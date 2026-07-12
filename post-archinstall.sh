@@ -40,6 +40,7 @@ PACKAGES=(
     gvfs-smb
     gvfs-nfs
     tumbler
+    file-roller
 
     # Wayland, Portals & Theming
     xdg-desktop-portal-wlr
