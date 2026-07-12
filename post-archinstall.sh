@@ -29,6 +29,8 @@ PACKAGES=(
     udiskie
     nfs-utils
     samba
+    zip
+    unzip
 
     # File Manager (Thunar)
     thunar
