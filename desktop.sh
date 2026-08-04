@@ -31,7 +31,7 @@ sudo pacman -S --needed --noconfirm spotify-launcher obsidian steam
 # 3. AUR Packages via Paru
 echo ""
 echo "Installing AUR packages via paru..."
-paru -S --needed --noconfirm bibata-cursor-theme popsicle-bin helium-browser-bin equibop-bin modrinth-app visual-studio-code-bin
+paru -S --needed --noconfirm bibata-cursor-theme popsicle-bin helium-browser-bin equibop-bin prismlauncher visual-studio-code-bin
 
 # 4. Audio Profile Configuration
 echo ""
